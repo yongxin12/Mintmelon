@@ -1053,6 +1053,18 @@ transition: all .3s;
     text-transform: uppercase;
 }
 
+.row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contact_info .detail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .contact_block {
     text-align: center;
 }
@@ -1144,7 +1156,10 @@ transition: all .3s;
 .social_links {
     padding:0;
     margin: 0;
-    display: block;
+    display: flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content: space-between;
     overflow: hidden;
     list-style: none;
 }
@@ -1186,7 +1201,7 @@ transition: all .3s;
 }
  
 
-.form {
+/* .form {
     margin: 0 66px 0 30px;
 }
 
@@ -1239,7 +1254,7 @@ transition: all .3s;
 .input-btn:hover {
     background: #fff;
     color: #222;
-}
+} */
 
 /* Footer
 ---------------------------------*/
