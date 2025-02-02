@@ -336,7 +336,7 @@ p {
 
 .navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:hover, .navbar-inverse .navbar-nav > .active > a:focus {
     color: #0A1525;
-    background-color: #FFFFFF;
+    background-color: #f99e22;
     border-radius: 4px;
 }
 
@@ -477,7 +477,7 @@ a.read_more:hover {
 
 #service {
     padding: 60px 0px;
-    background: #58d355;
+    background: #765796;
 }
 #service h2{
   color: #fff;
