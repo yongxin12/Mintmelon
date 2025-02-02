@@ -242,7 +242,7 @@ p {
 ---------------------------------*/
 
 #header_wrapper {
-    background: #15BA57;
+    background: #58d355;
     padding: 20px 0px;
 	
     border-top: 4px solid #FFFFFF;
@@ -367,6 +367,7 @@ p {
     position: relative; 
     background: url('../img/main2.jpg') no-repeat;
 	background-size: cover; 
+    background-position: center center;
 }
 
 .hero_section {
@@ -374,7 +375,7 @@ p {
     padding-top: 72px;
 }
 .hero_wrapper {
-background: rgba(10, 21, 37, 0.69);
+background: rgba(10, 21, 37, 0.70);
 height: 650px;
 }
 .white_pad {
@@ -476,7 +477,7 @@ a.read_more:hover {
 
 #service {
     padding: 60px 0px;
-    background: #11D25D;
+    background: #58d355;
 }
 #service h2{
   color: #fff;
