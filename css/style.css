@@ -465,7 +465,11 @@ a.read_more:hover {
 }
 
 	
-
+/* About me
+--------------------------------*/
+.col-md-6 {
+    margin-bottom: 40px;
+}
 
 
 
@@ -1428,6 +1432,7 @@ transition: all .3s;
 
 #portfolio_wrapper {
     position: relative;
+    display: flex;
     padding: 0;
     width: 100%;
     margin: 0 auto;
