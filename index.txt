@@ -1,0 +1,17 @@
+1:"$Sreact.fragment"
+2:I[1181,[],""]
+3:I[7305,[],""]
+4:I[4256,["256","static/chunks/256-4050e800009f8158.js","345","static/chunks/app/not-found-db198338a9db4318.js"],""]
+5:I[3424,[],"OutletBoundary"]
+7:I[7001,[],"AsyncMetadataOutlet"]
+9:I[3424,[],"ViewportBoundary"]
+b:I[3424,[],"MetadataBoundary"]
+c:"$Sreact.suspense"
+e:I[2223,[],""]
+:HL["/_next/static/css/f8e3e80dda1e32bb.css","style"]
+0:{"P":null,"b":"EItGnCpGIyEp0Wzx18sz7","p":"","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/f8e3e80dda1e32bb.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","main",null,{"style":{"padding":"4rem 1rem","fontFamily":"system-ui, sans-serif"},"children":[["$","h1",null,{"children":"404"}],["$","p",null,{"children":"This page doesn't exist."}],["$","p",null,{"children":["$","$L4",null,{"href":"/en/","children":"Go to Mintmelon →"}]}]]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","main",null,{"style":{"padding":"4rem 1rem","fontFamily":"system-ui, sans-serif"},"children":[["$","meta",null,{"httpEquiv":"refresh","content":"0; url=/en/"}],["$","p",null,{"children":["Redirecting to ",["$","a",null,{"href":"/en/","children":"/en/"}],"…"]}]]}],null,["$","$L5",null,{"children":["$L6",["$","$L7",null,{"promise":"$@8"}]]}]]}],{},null,false]},null,false],["$","$1","h",{"children":[null,[["$","$L9",null,{"children":"$La"}],null],["$","$Lb",null,{"children":["$","div",null,{"hidden":true,"children":["$","$c",null,{"fallback":null,"children":"$Ld"}]}]}]]}],false]],"m":"$undefined","G":["$e",[]],"s":false,"S":true}
+a:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+6:null
+f:I[9993,[],"IconMark"]
+8:{"metadata":[["$","title","0",{"children":"Mintmelon"}],["$","meta","1",{"name":"robots","content":"noindex, nofollow"}],["$","meta","2",{"name":"http-equiv=refresh","content":"0; url=/en/"}],["$","link","3",{"rel":"icon","href":"/favicon.png"}],["$","$Lf","4",{}]],"error":null,"digest":"$undefined"}
+d:"$8:metadata"
