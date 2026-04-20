@@ -304,7 +304,7 @@ Actions speak louder than words, and I live by both with passion.
 I strive not just to achieve, but to love and believe.
 ```
 
-8 段 range 高亮（示意；构建时按实际 `text` 字符串精确计算 indices）：
+`text` 总长 120（上下两行之间为单个 `\n`）。8 段 range 高亮（已按实际字符串验证，可直接使用）：
 
 | # | Range (start–end) | 高亮字符 |
 |---|---|---|
@@ -312,30 +312,51 @@ I strive not just to achieve, but to love and believe.
 | 2 | `[37, 38]` | `I` |
 | 3 | `[66, 69]` | `I s` |
 | 4 | `[79, 83]` | `just` |
-| 5 | `[89, 90]` | `c` |
-| 6 | `[112, 113]` | `o` |
-| 7 | `[117, 118]` | `d` |
-| 8 | `[121, 122]` | `e` |
+| 5 | `[88, 89]` | `c` |
+| 6 | `[104, 105]` | `o` |
+| 7 | `[110, 111]` | `d` |
+| 8 | `[113, 114]` | `e` |
 
 按顺序拼接高亮字符、移除空格、小写：`AIIsjustcode` → `aiisjustcode` ≡ `ai is just code` ✓
 
 ### 4.5.3 Schema
 
+Manifesto 数据用 discriminated union——只有 English 版本走 easter-egg 模式、跑高亮校验；Chinese 版本是直译朴素文本，没有 highlights/reveal。
+
+```ts
+// lib/content/site-schema.ts
+export type Manifesto =
+  | { mode: "easter-egg"; text: string; highlights: [number, number][]; reveal: string }
+  | { mode: "plain";      text: string }
+```
+
 ```ts
 // data/site.en.ts
 manifesto: {
-  text: "Actions speak louder than words, ...",
+  mode: "easter-egg",
+  text: "Actions speak louder than words, and I live by both with passion.\n"
+      + "I strive not just to achieve, but to love and believe.",
   highlights: [
     [0, 1], [37, 38], [66, 69], [79, 83],
-    [89, 90], [112, 113], [117, 118], [121, 122],
-  ] as Array<[number, number]>,
+    [88, 89], [104, 105], [110, 111], [113, 114],
+  ],
   reveal: "ai is just code",
 }
 ```
 
-构建期校验（`lib/content/validate-all.ts`）：
+```ts
+// data/site.zh.ts
+manifesto: {
+  mode: "plain",
+  text: "行动胜于言辞，我带着热情同时践行两者。\n我不仅追求成就，更心怀热爱与信念。",
+}
+```
+
+构建期校验（`lib/content/validate-all.ts`）—— **仅对 `mode === "easter-egg"` 跑**，`plain` 模式跳过：
 
 ```ts
+if (m.mode !== "easter-egg") return
+const { text, highlights, reveal } = m
 const collected = highlights
   .map(([s, e]) => text.slice(s, e))
   .join("")
@@ -380,7 +401,7 @@ next@15
 react@19  react-dom@19
 typescript@5
 tailwindcss@3.4  postcss  autoprefixer
-@next/mdx  next-mdx-remote  gray-matter
+next-mdx-remote  gray-matter  # 所有 MDX 走 RSC 运行时编译（不装 @next/mdx）
 zod
 framer-motion                # Manifesto 彩蛋全屏覆盖层（卡片展开走纯 CSS grid-template-rows）
 clsx
@@ -423,7 +444,7 @@ Mintmelon/
 ├─ public/
 │  ├─ favicon.png                # 保留
 │  ├─ CNAME                      # 保留 www.mintmelon.ca
-│  ├─ og.png                     # 自动生成占位（§7.3）
+│  ├─ og.png                     # 由 scripts/gen-og.mjs 在 prebuild 时生成；.gitignore 排除
 │  └─ img/{about1.png,main2.jpg,main2_eva1.jpg,main2_landscape.jpg}
 │
 ├─ styles/{globals.css,tokens.css}
@@ -441,15 +462,14 @@ Mintmelon/
 
 ```js
 // next.config.mjs
-import createMDX from "@next/mdx"
-const withMDX = createMDX()
-export default withMDX({
+export default {
   output: "export",
   trailingSlash: true,
   images: { unoptimized: true },
-  pageExtensions: ["ts", "tsx", "mdx"],
-})
+}
 ```
+
+MDX **不作为 Next 的 page 扩展**——所有 `.mdx` 都是 `content/` 下的数据文件，构建期由 `next-mdx-remote/rsc` 动态编译进 RSC 组件。因此不需要 `@next/mdx` 与 `pageExtensions`。
 
 ### 5.4 i18n（路由段驱动）
 
@@ -481,7 +501,11 @@ export function generateStaticParams() {
   export async function getAllProjects(locale): Promise<Project[]>
   export async function getProjectBySlug(locale, slug): Promise<Project | null>
   ```
-- `draft: true` 在 `getAllProjects` 层过滤，且**不**进入 `generateStaticParams` 的 slug 列表——所以即使有人手输 `/en/work/_draft-06/`，静态导出下直接 404，不会泄漏 draft 内容。
+- **Draft 隔离**（三道闸）：
+  1. `getAllProjects(locale)` 过滤掉 `draft: true`。
+  2. `getProjectBySlug(locale, slug)` 对 `draft: true` 返回 `null`——即使有人直接调用也读不到。
+  3. 详情页 `app/[locale]/work/[slug]/page.tsx` 导出 `export const dynamicParams = false`，在 `generateStaticParams` 之外的 slug 自动 404；页面内再拿到 null 时调 `notFound()` 兜底。
+  这样开发环境预览、未来改部署目标（比如迁 Cloudflare Pages 带动态路由）都不会泄漏 draft 内容。
 
 ### 5.6 字体自托管
 
@@ -589,7 +613,10 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20, cache: "pnpm" }
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build                 # next build → out/
+      - run: pnpm build                 # 含 prebuild(OG 生成) → next build → out/
+        env:
+          NEXT_PUBLIC_UMAMI_HOST:       ${{ secrets.NEXT_PUBLIC_UMAMI_HOST }}
+          NEXT_PUBLIC_UMAMI_WEBSITE_ID: ${{ secrets.NEXT_PUBLIC_UMAMI_WEBSITE_ID }}
       - run: cp public/CNAME out/CNAME
       - run: touch out/.nojekyll
       - uses: actions/upload-pages-artifact@v3
@@ -615,7 +642,7 @@ jobs:
 | 静态导出不支持 `redirect()` | 用 meta refresh + JS 双兜底（§5.4）。 |
 | 图片大小写不一致（macOS 不敏感 / Linux CI 敏感） | 全部小写文件名；CI 多一步 `ls public/img` 断言。 |
 | GH Pages 缓存 | workflow `concurrency.cancel-in-progress` + Next 自带文件名 hash。 |
-| 项目数暂不足 10 | 5 真实 + 5 `draft: true` 占位；`draft: false` 即上线。 |
+| 项目数暂不足 10 | 内容结构预置 10 个槽位（5 真实 + 5 draft），首发公开 5 个；User 把 draft 依次去掉即逐渐补到 10+。 |
 
 ---
 
@@ -643,7 +670,7 @@ jobs:
 - `app/[locale]/layout.tsx` 用 `generateMetadata`：
   - `title`: `Mintmelon — <Name>`
   - `description`: 取 hero roleLine
-  - `openGraph.images`: `/og.png`（1200×630）——**首版自动生成**：深色底 `#0B0B0B`、巨字 Fraunces `Mintmelon`、下方小字 `<Name> · <tagline>`，构建期由 `scripts/gen-og.mjs` 用 `satori` + `@resvg/resvg-js` 渲染到 `public/og.png`（checked in 或 workflow prepare 步骤生成）。
+  - `openGraph.images`: `/og.png`（1200×630）。深色底 `#0B0B0B`、巨字 Fraunces `Mintmelon`、下方小字 `<Name> · <tagline>`，由 `scripts/gen-og.mjs` 用 `satori` + `@resvg/resvg-js` 渲染。**生成路径固定为 `package.json` 的 `prebuild` hook**：`"prebuild": "node scripts/gen-og.mjs"`，每次 `pnpm build` 会先跑这个脚本重新生成 `public/og.png`，workflow 无需额外步骤。`public/og.png` **不 check in**——`.gitignore` 排除它，避免陈旧文件进 git。
   - `alternates.languages`: `{ en: "/en/", zh: "/zh/", "x-default": "/en/" }`
   - `twitter.card`: `summary_large_image`
 - `app/sitemap.ts` 穷举 `locales × (首页 + 所有非 draft 项目)`。
@@ -684,7 +711,7 @@ jobs:
 ### 7.7 验收清单（上线前必过）
 
 - [ ] `/` 自动跳 `/en/`
-- [ ] `/en/` 与 `/zh/` 两个首页 7 段（Hero / Manifesto / NumberedFacts / Featured / About / AllWork / Resume / Contact+Footer）齐全
+- [ ] `/en/` 与 `/zh/` 两个首页 8 段齐全（Hero / Manifesto / NumberedFacts / Featured / About / AllWork / Resume / Contact+Footer——Contact+Footer 算一段）
 - [ ] Manifesto 彩蛋：zod 校验通过；悬停揭示；连击全屏；`localStorage` 记录
 - [ ] 作品卡点 `+` 就地展开 + "View project →" 跳详情页
 - [ ] 详情页渲染 MDX；prev/next 导航
