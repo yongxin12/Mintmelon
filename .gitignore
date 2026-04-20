@@ -10,7 +10,6 @@ next-env.d.ts
 
 # generated assets
 public/og.png
-.superpowers/
 
 # logs
 npm-debug.log*
