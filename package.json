@@ -2,11 +2,13 @@
   "name": "mintmelon",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@9.12.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "node --experimental-strip-types tests/content.test.ts",
     "typecheck": "tsc --noEmit",
     "lint": "next lint"
   },
